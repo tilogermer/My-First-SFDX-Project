@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <environments>Default</environments>
+    <interviewLabel>Rebate Orchestration Flow 2_AMER Rebate Programs {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Rebate Orchestration Flow 2_AMER Rebate Programs</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <sourceTemplate>industries_mfg_rebates__RebateE2EFlow2</sourceTemplate>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>RunDPEJobs</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>0i8680000004SWsAAM</stringValue>
+            </value>
+        </filters>
+        <object>RebateProgram</object>
+        <schedule>
+            <frequency>Weekly</frequency>
+            <startDate>2023-01-12</startDate>
+            <startTime>20:30:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <description>Runs the Run Rebate Payout Calculations 2 flow to process aggregates that are created or updated after the last run of a Data Processing Engine definition and generate rebate payouts.</description>
+        <name>Run_Rebate_Payout_Calculations</name>
+        <label>Run Rebate Payout Calculations</label>
+        <locationX>791</locationX>
+        <locationY>376</locationY>
+        <connector>
+            <targetReference>Run_Rebate_Post_Payout_Actions</targetReference>
+        </connector>
+        <flowName>industries_mfg_rebates__RebateCalc2</flowName>
+    </subflows>
+    <subflows>
+        <description>Updates the last calculation date of the rebate payout and closes payout periods with payout calculation dates in the past using the Rebate Calculations Post Processing Data Processing Engine definition.</description>
+        <name>Run_Rebate_Post_Payout_Actions</name>
+        <label>Run Rebate Post Payout Actions</label>
+        <locationX>1113</locationX>
+        <locationY>557</locationY>
+        <flowName>industries_mfg_rebates__PostCalcFlow2</flowName>
+    </subflows>
+    <subflows>
+        <description>Runs Rebates process type DPE jobs and generates aggregate records.</description>
+        <name>RunDPEJobs</name>
+        <label>Run DPE Jobs</label>
+        <locationX>511</locationX>
+        <locationY>217</locationY>
+        <connector>
+            <targetReference>Run_Rebate_Payout_Calculations</targetReference>
+        </connector>
+        <flowName>industries_mfg_rebates__RebateAggFlow</flowName>
+    </subflows>
+</Flow>
